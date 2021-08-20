@@ -7,10 +7,21 @@ class Node:
         self.frequency = frequency # assings the parameter frequency(on RHS) to self frequency
         self.leftnode = leftnode # assigns leftnode parameter(on RHS) to self leftnode (assigns None if no argument is passed into the leftnode parameter)
         self.rightnode = rightnode # assigns leftnode parameter(on RHS) to self rightnode (assigns None if no argument is passed into the rightnode parameter)
-        self.huff = '' # empty string which adds tree direction as 0 for left and 1 for right (like a edge which is assigned 0 if on left and 1 if on right)
+        self.huffcode = '' # empty string which adds tree direction as 0 for left and 1 for right (like a edge which is assigned 0 if on left and 1 if on right)
+
 
 # this function helps to display huffman codes for all the symbols in the newly created huffman tree
-# def displayNodes(node, value=''):
+def displayNodes(node, huffvalue=''):
+    new_huffValue = huffvalue + str(node.huffcode)
+    # print(f"Testing {newValue}") # testing code
+    if node.leftnode:
+        displayNodes(node.leftnode, new_huffValue) # calling this same function recursively until the left node of the node is None
+    if node.rightnode:
+        displayNodes(node.rightnode, new_huffValue) # calling this same function recursively until the right node of the the node is None
+    
+    if not node.leftnode and not node.rightnode:
+        print(f"{node.symbol} \t\t {new_huffValue}")
+
 
 # prints Ascii art at start of our program
 print(f"{text}\n\n")
@@ -34,11 +45,13 @@ sort_freq = sorted(freq.items(), key=lambda x: x[1], reverse=True) # sorts the d
 
 # print(sort_freq[0][0],sort_freq[0][1]) # prints first tuple's first item and second item
 
-print("\nFrequency of individual characters of the string in descending order:\nCharacter\tFrequency")
+print("\nFrequency of individual characters of the string in descending order:\n\nCharacter\tFrequency")
 print("--------------------------")
 
 nodes = [] # empty list
 for (key,value) in sort_freq:
+    if key == ' ':
+        key = "' '"
     print(f" {key} \t\t {value} ") # extracts key and value of individual tuples from sorted_freq list, then prints it
     nodes.append(Node(key,value)) # in each iteration an object of Node class is created which converts characters & frequencies into huffman tree nodes and is added to list 'nodes' 
 
@@ -50,17 +63,33 @@ while len(nodes) > 1:
     combined_symbol = left.symbol + right.symbol
     combined_frequency = left.frequency + right.frequency
 
-    # assigning directional values to the left and right nodes above
-    left.huff = 0
-    right.huff = 1
+    # assigning directional values to the left and right nodes
+    left.huffcode = 0
+    right.huffcode = 1
 
     # combining the two smallest node above to create a new node which will be the parent of those two smallest nodes and its frequency will be the combined frequency if two smallest nodes
-    newNode = Node(combined_symbol, combined_frequency, left, right)
+    newNode = Node(combined_symbol, combined_frequency, left, right) # newNode is an object of Node class
 
     # removing the two smallest nodes and adding their parent newNode into node list 'nodes'
     nodes.remove(left)
     nodes.remove(right)
     nodes.append(newNode)
+
+    # Sorting all the nodes inside list 'nodes' in descending order of their frequencies
+    nodes = sorted(nodes, key=lambda x: x.frequency, reverse=True)
+
+# Program Testing Codes
+# print(nodes[0].symbol)
+# print(nodes[0].frequency)
+# print(f"Testing {nodes[0].huffcode}")
+# print(type(nodes[0].huffcode))
+
+# during this instance the 'nodes' list will contain only one node, 
+# which would be the root of our tree with the final combined frequency
+# and this node will be at index 0 of the list and is passed to displayNodes function as a keyword argument
+print("\nCharacters with Huffman Code assigned:\n\nCharacter\tHuffman Code")
+print("----------------------------")
+displayNodes(node = nodes[0]) 
 
 
 
