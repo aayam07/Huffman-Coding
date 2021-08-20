@@ -9,11 +9,12 @@ class Node:
         self.rightnode = rightnode # assigns leftnode parameter(on RHS) to self rightnode (assigns None if no argument is passed into the rightnode parameter)
         self.huffcode = '' # empty string which adds tree direction as 0 for left and 1 for right (like a edge which is assigned 0 if on left and 1 if on right)
 
+coded_dict = {} # empty dictionary to add every symbol as key and its huffman code as value in the displayNodes function below. This dictionary is later used to uncompress our huffman code.
 
 # this function helps to display huffman codes for all the symbols in the newly created huffman tree
 def displayNodes(node, huffvalue=''):
+    global coded_list  # declaring coded_list dictionary as a global variable to use it inside this function
     new_huffValue = huffvalue + str(node.huffcode)
-    # print(f"Testing {newValue}") # testing code
     if node.leftnode:
         displayNodes(node.leftnode, new_huffValue) # calling this same function recursively until the left node of the node is None
     if node.rightnode:
@@ -21,7 +22,32 @@ def displayNodes(node, huffvalue=''):
     
     if not node.leftnode and not node.rightnode:
         print(f"{node.symbol} \t\t {new_huffValue}")
+        coded_dict[node.symbol] = new_huffValue # adds node.symbol as key and new_huffvalue as key's value in coded_dict
 
+
+decoded_string = ''
+def decode(node, to_decode):
+    global decoded_string
+    # decoded_string = ''
+    i=0
+    huffman_code = ''
+    while node.leftnode or node.rightnode:
+        if to_decode[i] == '0':
+            node = node.leftnode
+            huffman_code += str(node.huffcode)
+        if to_decode[i] == '1':
+            node = node.rightnode
+            huffman_code += str(node.huffcode)
+        i = i+1
+
+    if node.symbol == "' '": # if single quotation 
+        node.symbol = ' ' # then replacing it with a space
+        decoded_string += node.symbol
+    else:
+        decoded_string += node.symbol
+
+    new_to_decode = to_decode.replace(huffman_code,"",1)
+    return new_to_decode
 
 # prints Ascii art at start of our program
 print(f"{text}\n\n")
@@ -43,9 +69,7 @@ for c in string_as_list:
 # sorting the contents of freq dictionary in descending order of frequency(i.e by its values)
 sort_freq = sorted(freq.items(), key=lambda x: x[1], reverse=True) # sorts the dictionary by its value and stores in a form of tuples inside a list. Here the second parameter is a sorting mechanism that allows us to sort our dictionary by value. This is an example of a Lambda function, which is a function without a name.
 
-# print(sort_freq[0][0],sort_freq[0][1]) # prints first tuple's first item and second item
-
-print("\nFrequency of individual characters of the string in descending order:\n\nCharacter\tFrequency")
+print("\nFrequency of individual characters of the string in descending order below:\n\nCharacter\tFrequency")
 print("--------------------------")
 
 nodes = [] # empty list
@@ -78,28 +102,36 @@ while len(nodes) > 1:
     # Sorting all the nodes inside list 'nodes' in descending order of their frequencies
     nodes = sorted(nodes, key=lambda x: x.frequency, reverse=True)
 
-# Program Testing Codes
-# print(nodes[0].symbol)
-# print(nodes[0].frequency)
-# print(f"Testing {nodes[0].huffcode}")
-# print(type(nodes[0].huffcode))
-
 # during this instance the 'nodes' list will contain only one node, 
 # which would be the root of our tree with the final combined frequency
 # and this node will be at index 0 of the list and is passed to displayNodes function as a keyword argument
-print("\nCharacters with Huffman Code assigned:\n\nCharacter\tHuffman Code")
+print("\nCharacters with Huffman Code assigned below:\n\nCharacter\tHuffman Code")
 print("----------------------------")
 displayNodes(node = nodes[0]) 
 
+# print(coded_dict) # prints the coded_dict dictionary with all the keys and values of encoded huff code
+
+# replacing ' ' key in dictionary with an actual space to print below
+if "' '" in coded_dict:
+    coded_dict[" "] = coded_dict["' '"]
+    del coded_dict["' '"]
+
+code_to_decode = ''
+for c in string_to_compress:
+        code_to_decode += coded_dict[c] # returns the value associated with character 'c' which is the key of dictionary 'coded_dict'
+        
+#print(string_to_compress.count(item))
+print(f"\nThe required Huffman Code for '{string_to_compress}' is {code_to_decode}\n")
 
 
+# Uncompression
+want_to_uncompress = input("Do you also want to uncompress the Huffman Code above(y/n): ").lower()
 
+if want_to_uncompress == 'y':
+    while code_to_decode != '':
+        new_to_decode = decode(node = nodes[0], to_decode = code_to_decode)
+        code_to_decode = new_to_decode
     
-
-
-
-
-
-
-
-
+    print(f"\nThe decoded string for the Huffman Code obtained above is '{decoded_string}'")
+else:
+    print("Thank You!")      
