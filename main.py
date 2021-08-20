@@ -1,4 +1,4 @@
-from huffman_art import text
+from huffman_art import art
 
 class Node:
     # constructor
@@ -24,11 +24,10 @@ def displayNodes(node, huffvalue=''):
         print(f"{node.symbol} \t\t {new_huffValue}")
         coded_dict[node.symbol] = new_huffValue # adds node.symbol as key and new_huffvalue as key's value in coded_dict
 
-
 decoded_string = ''
+#function to uncompress the Huffman Code we obtain 
 def decode(node, to_decode):
     global decoded_string
-    # decoded_string = ''
     i=0
     huffman_code = ''
     while node.leftnode or node.rightnode:
@@ -46,11 +45,11 @@ def decode(node, to_decode):
     else:
         decoded_string += node.symbol
 
-    new_to_decode = to_decode.replace(huffman_code,"",1)
+    new_to_decode = to_decode.replace(huffman_code,"",1) # replaces the huffman code of a particular symbol with empty string to decode the remaining string bits
     return new_to_decode
 
 # prints Ascii art at start of our program
-print(f"{text}\n\n")
+print(f"{art}\n\n")
 
 # taking user input for string, and converts all the letters into lower case
 string_to_compress = input("Enter the string: ").lower()
@@ -79,6 +78,7 @@ for (key,value) in sort_freq:
     print(f" {key} \t\t {value} ") # extracts key and value of individual tuples from sorted_freq list, then prints it
     nodes.append(Node(key,value)) # in each iteration an object of Node class is created which converts characters & frequencies into huffman tree nodes and is added to list 'nodes' 
 
+#logic for compression
 while len(nodes) > 1:
 
     # picking two smallest nodes
@@ -128,6 +128,7 @@ print(f"\nThe required Huffman Code for '{string_to_compress}' is {code_to_decod
 want_to_uncompress = input("Do you also want to uncompress the Huffman Code above(y/n): ").lower()
 
 if want_to_uncompress == 'y':
+    # logic to uncompress
     while code_to_decode != '':
         new_to_decode = decode(node = nodes[0], to_decode = code_to_decode)
         code_to_decode = new_to_decode
