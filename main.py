@@ -13,7 +13,7 @@ coded_dict = {} # empty dictionary to add every symbol as key and its huffman co
 
 # this function helps to display huffman codes for all the symbols in the newly created huffman tree
 def displayNodes(node, huffvalue=''):
-    global coded_list  # declaring coded_list dictionary as a global variable to use it inside this function
+    global coded_dict  # declaring coded_dict dictionary as a global variable to use it inside this function
     new_huffValue = huffvalue + str(node.huffcode)
     if node.leftnode:
         displayNodes(node.leftnode, new_huffValue) # calling this same function recursively until the left node of the node is None
@@ -22,7 +22,7 @@ def displayNodes(node, huffvalue=''):
     
     if not node.leftnode and not node.rightnode:
         print(f"{node.symbol} \t\t {new_huffValue}")
-        coded_dict[node.symbol] = new_huffValue # adds node.symbol as key and new_huffvalue as key's value in coded_dict
+        coded_dict[node.symbol] = new_huffValue # adds node.symbol as key and new_huffvalue as key's value in coded_dict as a new key-value pair
 
 decoded_string = ''
 #function to uncompress the Huffman Code we obtain 
